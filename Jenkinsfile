@@ -4,7 +4,7 @@ pipeline {
         stage('build') {
             steps {
                 sh 'hostname'
-		sh 'ip addr'
+		sh 'ip addr show'
             }
         }
     }
