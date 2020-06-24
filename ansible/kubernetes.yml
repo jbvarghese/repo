@@ -1,0 +1,40 @@
+---
+# kubernetes package instll for single node cluster
+
+- hosts: kube
+  become: yes
+  become_user: root
+  vars:
+    update: false
+    base_path: /root/ansible
+  tasks:
+
+  - name: Apt update
+    command: apt update
+    when: update
+
+  - name: get kubernetes apt key
+    get_url:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      dest: /tmp/apt-key.gpg
+    register: aptkey
+
+  - name: import gpg key
+    command: apt-key add /tmp/apt-key.gpg
+    when: aptkey.changed
+
+  - name: copy Kubernetes sources list
+    copy:
+      src: "{{ base_path }}/files/kubernetes.list"
+      dest: /etc/apt/sources.list.d/kubernetes.list
+
+  - name: install kubernetes packages
+    package:
+      name: 
+        - kubelet
+        - kubeadm
+        - kubectl
+        - kubernetes-cni
+        - docker
+      state: present
+
